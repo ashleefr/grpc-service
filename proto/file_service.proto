@@ -1,35 +1,40 @@
 syntax = "proto3";
 
 package proto;
+
 option go_package = "/proto;proto";
 
 service FileService {
-  rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse);
-  rpc ListFiles(Empty) returns (stream ListFilesResponse);
-  rpc DownloadFile(FileRequest) returns (stream FileChunk);
+  rpc UploadFile (stream UploadFileRequest) returns (UploadFileResponse);
+  rpc ListFiles (ListFilesRequest) returns (ListFilesResponse);
+  rpc DownloadFile (DownloadFileRequest) returns (stream DownloadFileResponse);
 }
 
 message UploadFileRequest {
-  bytes data = 1;
-  string filename = 2;
+  string filename = 1;
+  bytes data = 2;
 }
 
 message UploadFileResponse {
   string message = 1;
 }
 
-message Empty {}
+message ListFilesRequest {}
 
 message ListFilesResponse {
+  repeated FileInfo files = 1;
+}
+
+message FileInfo {
   string filename = 1;
   string created_at = 2;
   string updated_at = 3;
 }
 
-message FileRequest {
+message DownloadFileRequest {
   string filename = 1;
 }
 
-message FileChunk {
+message DownloadFileResponse {
   bytes data = 1;
 }
