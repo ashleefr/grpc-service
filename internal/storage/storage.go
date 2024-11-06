@@ -13,7 +13,7 @@ type FileStorage struct {
 	storagePath string
 }
 
-// NewFileStorage Создание экземпляра FileStorage
+// NewFileStorage Creating a new FileStorage
 func NewFileStorage(path string) (*FileStorage, error) {
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func NewFileStorage(path string) (*FileStorage, error) {
 	return &FileStorage{storagePath: path}, nil
 }
 
-// Upload Загрузка файла
+// Upload Uploading a file
 func (s *FileStorage) Upload(stream pb.FileService_UploadFileServer) error {
 	var filename string
 	var file *os.File
@@ -52,7 +52,7 @@ func (s *FileStorage) Upload(stream pb.FileService_UploadFileServer) error {
 	return stream.SendAndClose(&pb.UploadFileResponse{Message: "Файл успешно загружен"})
 }
 
-// List Возвращает список файлов
+// List Viewing a list of files
 func (s *FileStorage) List() (*pb.ListFilesResponse, error) {
 	files, err := os.ReadDir(s.storagePath)
 	if err != nil {
@@ -81,7 +81,7 @@ func (s *FileStorage) List() (*pb.ListFilesResponse, error) {
 	return &pb.ListFilesResponse{Files: fileInfos}, nil
 }
 
-// Download Скачивание файла
+// Download Downloading a file
 func (s *FileStorage) Download(filename string, stream pb.FileService_DownloadFileServer) error {
 	filePath := filepath.Join(s.storagePath, filename)
 	file, err := os.Open(filePath)
