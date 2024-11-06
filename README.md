@@ -59,7 +59,7 @@ grpc-service/
 Запустите сервер с помощью следующей команды:
 
 ```bash
-go run cmd/server/main.go
+go run main.go
 ```
 
 Сервер будет запущен на порту 1337.
