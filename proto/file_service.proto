@@ -5,8 +5,21 @@ package proto;
 option go_package = "/proto;proto";
 
 service FileService {
+  // Upload a file to the server.
+  //
+  // The request message stream is intended to be a single message with a
+  // filename and the file contents. The response message is a single message
+  // with a blank filename and a status code.
   rpc UploadFile (stream UploadFileRequest) returns (UploadFileResponse);
+  // List the files stored on the server.
+  //
+  // The request message is empty, and the response message is a stream of
+  // FileInfo messages.
   rpc ListFiles (ListFilesRequest) returns (ListFilesResponse);
+  // Download a file from the server.
+  //
+  // The request message contains the filename of the desired file.
+  // The response message is a stream of data chunks of the file.
   rpc DownloadFile (DownloadFileRequest) returns (stream DownloadFileResponse);
 }
 
