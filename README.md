@@ -8,7 +8,7 @@
 grpc-service/
 ├── cmd/
 │   └── server/
-│       └── app.go               // 
+│       └── app.go               // Инициализация и запуск gRPC-сервера 
 ├── internal/
 │   ├── server/
 │   │   └── server.go            // Реализация gRPC-сервера
@@ -18,7 +18,7 @@ grpc-service/
 │   └── file_service.proto       // gRPC-протофайл
 ├── storage/                     // Директория хранения файлов
 ├── go.mod                       // Go-модуль
-├── main.go                      // 
+├── main.go                      // Основной файл запуска приложения
 └── README.md                    // Описание проекта
 ```
 
