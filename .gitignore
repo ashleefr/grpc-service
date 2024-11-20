@@ -25,8 +25,8 @@ go.work.sum
 .env
 
 # Protobuf generated
-/proto/file_service.pb.go
-/proto/file_service_grpc.pb.go
+/pkg/proto/file_service.pb.go
+/pkg/proto/file_service_grpc.pb.go
 
 # IDE
 .idea
