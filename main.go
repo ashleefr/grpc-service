@@ -1,12 +1,24 @@
 package main
 
-import "grpc-file-service/cmd/server"
+import (
+	"log"
+	"os"
 
-// main - The main entry point for the gRPC file service.
-//
-// This main function is used to start the gRPC server and
-// listen for incoming requests.
+	"grpc-file-service/cmd/server"
+)
+
 func main() {
-	// Run the gRPC server
-	server.Run()
+	dbConnStr := os.Getenv("DB_CONN_STR") // Получаем строку подключения к БД из переменной окружения
+	if dbConnStr == "" {
+		log.Fatal("DB_CONN_STR environment variable is required")
+	}
+
+	// Инициализация приложения
+	app, err := server.InitApp(dbConnStr, "storage")
+	if err != nil {
+		log.Fatalf("Failed to initialize application: %v", err)
+	}
+
+	// Запуск приложения на порту 1337
+	server.Run(app, 1337)
 }

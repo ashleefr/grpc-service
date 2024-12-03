@@ -1,61 +1,42 @@
 package grpcserver
 
 import (
-	"context"
+	"fmt"
+	"google.golang.org/grpc"
+	"grpc-file-service/internal/usecases/fileusecase"
+	"grpc-file-service/pkg/proto"
 	"log"
 	"net"
-
-	"grpc-file-service/internal/models/modelssvc"
-	"grpc-file-service/internal/usecases/fileusecase"
-	pb "grpc-file-service/pkg/proto"
-
-	"google.golang.org/grpc"
 )
 
 type GRPCServer struct {
-	usecase *fileusecase.UseCase
-	pb.UnimplementedFileServiceServer
+	useCase fileusecase.FileUseCase
+	proto.UnimplementedFileServiceServer
 }
 
-func NewGRPCServer(uc *fileusecase.UseCase) *GRPCServer {
-	return &GRPCServer{usecase: uc}
-}
-
-func (s *GRPCServer) UploadFile(ctx context.Context, req *pb.UploadFileRequest) (*pb.UploadFileResponse, error) {
-	file := &modelssvc.File{
-		ID:   "some_generated_id",
-		Name: req.GetName(),
-		Data: req.GetData(),
+func NewGRPCServer(useCase *fileusecase.FileUseCase) *GRPCServer {
+	return &GRPCServer{
+		useCase: useCase,
 	}
-	err := s.usecase.UploadFile(ctx, file)
+}
+
+func (s *GRPCServer) Start(port int) error {
+	// Настройка gRPC сервера
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
-		return nil, err
+		return fmt.Errorf("failed to start listener: %w", err)
 	}
-	return &pb.UploadFileResponse{Message: "File uploaded successfully"}, nil
+
+	grpcServer := grpc.NewServer()
+
+	proto.RegisterFileServiceServer(grpcServer, s)
+
+	log.Printf("gRPC server started on :%d", port)
+	return grpcServer.Serve(lis)
 }
 
-func (s *GRPCServer) GetFile(ctx context.Context, req *pb.GetFileRequest) (*pb.GetFileResponse, error) {
-	file, err := s.usecase.GetFile(ctx, req.GetId())
-	if err != nil {
-		return nil, err
-	}
-	return &pb.GetFileResponse{
-		Name: file.Name,
-		Data: file.Data,
-	}, nil
-}
-
-func InitGRPCServer(port string, uc *fileusecase.UseCase) {
-	server := grpc.NewServer()
-	grpcServer := NewGRPCServer(uc)
-	pb.RegisterFileServiceServer(server, grpcServer)
-
-	lis, err := net.Listen("tcp", ":"+port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	log.Printf("gRPC server started on port %s", port)
-	if err := server.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+func (s *GRPCServer) Stop() error {
+	// Здесь можно добавить логику для graceful shutdown
+	log.Println("Stopping gRPC server...")
+	return nil
 }

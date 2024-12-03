@@ -1,27 +1,28 @@
 package fileusecase
 
 import (
-	"context"
-	"grpc-file-service/internal/models/modelssvc"
+	"fmt"
+	"grpc-file-service/internal/services/db"
+	"grpc-file-service/internal/services/localstorage"
 )
 
-type FileRepository interface {
-	Save(ctx context.Context, file *modelssvc.File) error
-	FindByID(ctx context.Context, id string) (*modelssvc.File, error)
+type FileUseCase struct {
+	db          *db.DB
+	fileStorage *localstorage.FileStorage
 }
 
-type UseCase struct {
-	repo FileRepository
+func NewFileUseCase(db *db.DB, fileStorage *localstorage.FileStorage) *FileUseCase {
+	return &FileUseCase{
+		db:          db,
+		fileStorage: fileStorage,
+	}
 }
 
-func New(repo FileRepository) *UseCase {
-	return &UseCase{repo: repo}
-}
-
-func (uc *UseCase) UploadFile(ctx context.Context, file *modelssvc.File) error {
-	return uc.repo.Save(ctx, file)
-}
-
-func (uc *UseCase) GetFile(ctx context.Context, id string) (*modelssvc.File, error) {
-	return uc.repo.FindByID(ctx, id)
+func (uc *FileUseCase) SomeDatabaseOperation() error {
+	// Пример использования db.DB
+	_, err := uc.db.Exec("SELECT 1") // Выполнение запроса
+	if err != nil {
+		return fmt.Errorf("database operation failed: %v", err)
+	}
+	return nil
 }

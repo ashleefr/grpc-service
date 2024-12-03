@@ -1,53 +1,40 @@
 syntax = "proto3";
 
-package proto;
+package fileservice;
 
-option go_package = "/proto;proto";
+option go_package = "pkg/proto;proto";
 
+// Сервис для работы с файлами
 service FileService {
-  // Upload a file to the server.
-  //
-  // The request message stream is intended to be a single message with a
-  // filename and the file contents. The response message is a single message
-  // with a blank filename and a status code.
-  rpc UploadFile (stream UploadFileRequest) returns (UploadFileResponse);
-  // List the files stored on the server.
-  //
-  // The request message is empty, and the response message is a stream of
-  // FileInfo messages.
-  rpc ListFiles (ListFilesRequest) returns (ListFilesResponse);
-  // Download a file from the server.
-  //
-  // The request message contains the filename of the desired file.
-  // The response message is a stream of data chunks of the file.
-  rpc DownloadFile (DownloadFileRequest) returns (stream DownloadFileResponse);
+  rpc UploadFile (UploadFileRequest) returns (UploadFileResponse);
+  rpc GetFileInfo (GetFileInfoRequest) returns (GetFileInfoResponse);
+  rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse);
 }
 
+// Сообщения...
 message UploadFileRequest {
   string filename = 1;
-  bytes data = 2;
+  bytes content = 2;
 }
 
 message UploadFileResponse {
   string message = 1;
 }
 
-message ListFilesRequest {}
-
-message ListFilesResponse {
-  repeated FileInfo files = 1;
-}
-
-message FileInfo {
-  string filename = 1;
-  string created_at = 2;
-  string updated_at = 3;
-}
-
-message DownloadFileRequest {
+message GetFileInfoRequest {
   string filename = 1;
 }
 
-message DownloadFileResponse {
-  bytes data = 1;
+message GetFileInfoResponse {
+  string filename = 1;
+  int64 size = 2;
+  string upload_date = 3;
+}
+
+message DeleteFileRequest {
+  string filename = 1;
+}
+
+message DeleteFileResponse {
+  string message = 1;
 }

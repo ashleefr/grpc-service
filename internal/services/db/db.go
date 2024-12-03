@@ -1,28 +1,26 @@
 package db
 
 import (
-	"context"
-	"errors"
-	"myapp/internal/models/modelssvc"
+	"database/sql"
+	"fmt"
+	_ "github.com/lib/pq" // импорт драйвера PostgreSQL
 )
 
 type DB struct {
-	storage map[string]*modelssvc.File
+	*sql.DB
 }
 
-func NewDB() *DB {
-	return &DB{storage: make(map[string]*modelssvc.File)}
-}
-
-func (db *DB) Save(ctx context.Context, file *modelssvc.File) error {
-	db.storage[file.ID] = file
-	return nil
-}
-
-func (db *DB) FindByID(ctx context.Context, id string) (*modelssvc.File, error) {
-	file, ok := db.storage[id]
-	if !ok {
-		return nil, errors.New("file not found")
+func NewDB(dataSourceName string) (*DB, error) {
+	// Создание подключения к базе данных
+	db, err := sql.Open("postgres", dataSourceName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
-	return file, nil
+
+	// Пингуем базу данных, чтобы убедиться, что подключение установлено
+	if err := db.Ping(); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %v", err)
+	}
+
+	return &DB{DB: db}, nil
 }
